@@ -90,6 +90,14 @@ function render_species_list(film: StarwarsFilm) {
     StarwarsAPI.get_species(film).then(set_species).catch(console.error);
   }, [film.title]);
 
+  if (!species.length) {
+    return (
+      <T1>
+        <>Species: {"Fetching data..."}</>
+      </T1>
+    );
+  }
+
   return (
     <T1>
       <>Species: {species.map((s) => s.name).join(", ")}</>
