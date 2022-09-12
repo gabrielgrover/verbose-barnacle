@@ -61,7 +61,7 @@ function render_about_me() {
   return (
     <ExpandableContainer
       containerStyle={styles.expandable_about_me_container}
-      renderMainContent={render_name}
+      renderMainContent={render_about_me_heading}
       renderExpandedContent={render_expanded_about_me}
     />
   );
@@ -84,7 +84,7 @@ function render_expanded_content(film: StarwarsFilm) {
 }
 
 function render_species_list(film: StarwarsFilm) {
-	const [species, set_species] = React.useState<Species[]>([]);
+  const [species, set_species] = React.useState<Species[]>([]);
 
   React.useEffect(() => {
     StarwarsAPI.get_species(film).then(set_species).catch(console.error);
@@ -97,7 +97,7 @@ function render_species_list(film: StarwarsFilm) {
   );
 }
 
-function render_name() {
+function render_about_me_heading() {
   return <T1>{"About me"}</T1>;
 }
 
