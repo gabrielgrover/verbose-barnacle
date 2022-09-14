@@ -1,46 +1,52 @@
-const BASE_URL = "https://swapi.dev/api";
+import { request, gql } from "graphql-request";
 
-export const StarwarsAPI = { get_all_films, get_species };
+export const StarwarsAPI = { get_all_films };
 
 export type StarwarsFilm = {
   title: string;
-  episode_id: number;
-  opening_crawl: string;
   director: string;
-  producer: string;
   release_date: string;
-  characters: string[];
-  planets: string[];
-  starships: string[];
-  vehicles: string[];
   species: string[];
-  created: string;
-  edited: string;
-  url: string;
 };
 
-export type Species = {
-  name: string;
-};
+const BASE_URL = "https://swapi-graphql.netlify.app/.netlify/functions/index";
 
-async function get_all_films() {
-  return fetch(BASE_URL + "/films")
-    .then((r) => r.json())
-    .then((data) => {
-      if (Array.isArray(data?.results)) {
-        return data.results as StarwarsFilm[];
+const basic_films_query = gql`
+  query Query {
+    allFilms {
+      films {
+        title
+        director
+        releaseDate
+        speciesConnection {
+          species {
+            name
+          }
+        }
       }
+    }
+  }
+`;
 
-      return [];
-    });
-}
+async function get_all_films(): Promise<StarwarsFilm[]> {
+  type AllFilmsResp = {
+    allFilms: {
+      films: {
+        title: string;
+        director: string;
+        releaseDate: string;
+        speciesConnection: {
+          species: { name: string }[];
+        };
+      }[];
+    };
+  };
 
-async function get_species(film: StarwarsFilm) {
-  return Promise.all(
-    film.species.map((species_url) =>
-      fetch(species_url)
-        .then((r) => r.json())
-        .then((data) => ({ name: data.name } as Species))
-    )
+  return request<AllFilmsResp>(BASE_URL, basic_films_query).then((r) =>
+    r.allFilms.films.map((f) => ({
+      ...f,
+      species: f.speciesConnection.species.map((s) => s.name),
+      release_date: f.releaseDate,
+    }))
   );
 }

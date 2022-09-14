@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Container, ExpandableContainer, T1 } from "../components";
-import { StarwarsAPI, StarwarsFilm, Species } from "../apis/starwars";
+import { StarwarsAPI, StarwarsFilm } from "../apis/starwars";
 import { parse_date } from "../utils/parse_date";
 
 export const HomeScreen: React.FC = () => {
@@ -84,23 +84,9 @@ function render_expanded_content(film: StarwarsFilm) {
 }
 
 function render_species_list(film: StarwarsFilm) {
-  const [species, set_species] = React.useState<Species[]>([]);
-
-  React.useEffect(() => {
-    StarwarsAPI.get_species(film).then(set_species).catch(console.error);
-  }, [film.title]);
-
-  if (!species.length) {
-    return (
-      <T1>
-        <>Species: {"Fetching data..."}</>
-      </T1>
-    );
-  }
-
   return (
     <T1>
-      <>Species: {species.map((s) => s.name).join(", ")}</>
+      <>Species: {film.species.join(", ")}</>
     </T1>
   );
 }
